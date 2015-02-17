@@ -1,0 +1,13 @@
+%echo Generating key for application-1
+Key-Type: DSA
+Key-Length: 3072
+Subkey-Type: ELG-E
+Subkey-Length: 3072
+Name-Real: Application1
+Name-Email: nil
+Expire-Date: 0
+%no-ask-passphrase
+%pubring app1.pub
+%secring app1.sec
+%commit
+%echo done

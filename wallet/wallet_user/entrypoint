@@ -1,0 +1,36 @@
+#!/bin/bash
+
+# add keys from mounted volume. check first
+if [[ ! -d /tmp/keys ]]; then
+	echo ERROR Expected gpg keys to be mounted to /tmp/keys, exiting
+	exit 1
+fi
+if [[ `find /tmp/keys -type f | wc -l` -eq 0 ]]; then
+	echo ERROR No keys found in mounted /tmp/keys, exiting
+	exit 2
+fi
+cd /tmp/keys && \
+        for i in *; do gpg --import --import-options import-clean,import-minimal --allow-secret-key-import $i; done;
+# 
+
+# curl secrets we need
+
+set -x
+OBJECTS="database"
+for OBJECT in $OBJECTS; do
+	curl -s -k \
+		--key /tmp/tls/client.key \
+		--cert /tmp/tls/client.crt \
+		"https://$WALLET_PORT_8443_TCP_ADDR:$WALLET_PORT_8443_TCP_PORT/$OBJECT" | gpg -dq >/tmp/$OBJECT
+done
+
+# render config files
+
+# remove keys and imported certificates (hard)
+rm -fr /tmp/tls
+rm -fr /root/.gnupg
+
+# exec app
+exec /bin/bash
+
+

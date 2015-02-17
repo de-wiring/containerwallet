@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# key
+# 
+# stores the public key
+#
+
+PUBLIC_KEY_ID="containerwallet"
+
+gpg --import \
+	--batch -q --yes \
+	-
+
+gpg -k
