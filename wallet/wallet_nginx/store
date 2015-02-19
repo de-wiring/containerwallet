@@ -20,7 +20,7 @@ TARGET_DIR="/wallet/data"
 TARGET_SIGDIR="/wallet/data-sigs"
 TARGET_FILE=`basename $2`
 
-# switch perms, call gpg, read from stdin, encrypt to wallet file
+# switch perms, call gpg, read from stdin, encrypt to wallet file, sign with containerwallet key
 ( umask o-rwx,g-wx,u+rw; \
 	gpg \
 	--encrypt \
@@ -30,10 +30,10 @@ TARGET_FILE=`basename $2`
 	-o $TARGET_DIR/$TARGET_FILE \
 	--batch -q --yes \
 	- ; \
-	cat $TARGET_DIR/$TARGET_FILE | \
 	gpg \
-	--sign --detach-sig -a \
-	--output $TARGET_SIGDIR/$TARGET_FILE.sig
+	--sign --detach-sig -a --no-tty \
+	--output $TARGET_SIGDIR/$TARGET_FILE.sig \
+	$TARGET_DIR/$TARGET_FILE
 ) && {
 	echo OK	$TARGET_FILE for target $PUBLIC_KEY_ID
 }

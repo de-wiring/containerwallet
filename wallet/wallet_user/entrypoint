@@ -9,28 +9,33 @@ if [[ `find /tmp/keys -type f | wc -l` -eq 0 ]]; then
 	echo ERROR No keys found in mounted /tmp/keys, exiting
 	exit 2
 fi
-cd /tmp/keys && \
-        for i in *; do gpg --import --import-options import-clean,import-minimal --allow-secret-key-import $i; done;
-# 
 
 # curl secrets we need
 
-set -x
-OBJECTS="database"
 for OBJECT in $OBJECTS; do
+	echo Querying $OBJECT
 	curl -s -k \
 		--key /tmp/tls/client.key \
 		--cert /tmp/tls/client.crt \
-		"https://$WALLET_PORT_8443_TCP_ADDR:$WALLET_PORT_8443_TCP_PORT/$OBJECT" | gpg -dq >/tmp/$OBJECT
+		"https://$WALLET_PORT_8443_TCP_ADDR:$WALLET_PORT_8443_TCP_PORT/$OBJECT" | \
+	gpg -d -q --no-default-keyring \
+		--secret-keyring /tmp/keys/*.sec \
+		--keyring /tmp/keys/*.pub 2>/dev/null \
+	>/tmp/$OBJECT
+
+	# render config files. demo here: just show..
+	ls -al /tmp/$OBJECT
+	cat /tmp/$OBJECT
+	# and remove
+	rm /tmp/$OBJECTS
 done
 
-# render config files
-
-# remove keys and imported certificates (hard)
+# remove tls keys, so no process is able to query the wallet again
 rm -fr /tmp/tls
-rm -fr /root/.gnupg
 
-# exec app
+#rm -fr ~/.gnupg
+
+# exec "app", just shell for demoing
 exec /bin/bash
 
 

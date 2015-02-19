@@ -1,8 +1,8 @@
-%echo Generating key for application-1
-Key-Type: DSA
-Key-Length: 3072
-Subkey-Type: ELG-E
-Subkey-Length: 3072
+%echo Generating key for Application1
+Key-Type: RSA
+Key-Length: 4096
+Subkey-Type: RSA
+Subkey-Length: 4096
 Name-Real: Application1
 Name-Email: nil
 Expire-Date: 0

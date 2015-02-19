@@ -13,7 +13,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # master
   config.vm.define 'wallet', primary: true do |m|
-	  m.vm.network "private_network", type: "dhcp"
+	  #m.vm.network "private_network", type: "dhcp"
 	  m.vm.hostname = "wallet"
 	  #m.vm.network "forwarded_port", guest: 8500, host: 8500
 

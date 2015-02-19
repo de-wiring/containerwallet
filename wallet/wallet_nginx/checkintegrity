@@ -21,7 +21,7 @@ gpg -k $ID | grep -wq "^pub.*4096"
 F=/wallet/bin/store
 if [[ -x $F ]]; then
 	echo OK	script found: $F
-	if [[ `sha1sum $F` == "39fb4982386be62b3f064aa29e43144dceac6b19  /wallet/bin/store" ]]; then
+	if [[ `sha1sum $F` == "3564932bc51f2f423c814211a1169a40a3544020  /wallet/bin/store" ]]; then
 		echo OK	SHA sum ok: $F
 	else
 		echo ERROR	script found, but SHA invalid!
@@ -42,15 +42,17 @@ else
 	echo OK	All objects have correct access rights
 fi
 
-# check signatures of all encrypted objects
-( cd /wallet/data; for o in *; do 
-	gpg --verify /wallet/data-sigs/${o}.sig /wallet/data/$o >/dev/null 2>&1
-	if [[ $? -eq 0 ]]; then
-		echo OK	signature ok: $o
-	else
-		echo ERROR signature INVALID: $o ! Please recreate wallet
-		gpg --verify /wallet/data-sigs/${o}.sig /wallet/data/$o
-	fi
-  done
-)
+# check signatures of all encrypted objects, if any
+if [[ $NUM -gt 0 ]]; then
+	( cd /wallet/data; for o in *; do 
+		gpg --verify /wallet/data-sigs/${o}.sig /wallet/data/$o >/dev/null 2>&1
+		if [[ $? -eq 0 ]]; then
+			echo OK	signature ok: $o
+		else
+			echo ERROR signature INVALID: $o ! Please recreate wallet
+			gpg --verify /wallet/data-sigs/${o}.sig /wallet/data/$o
+		fi
+	  done
+	)
+fi
 

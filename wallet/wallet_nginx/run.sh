@@ -6,6 +6,7 @@ docker run \
 	-tdi \
 	-u wallet \
 	--name wallet \
+	--expose=8443 \
   	-v `pwd`:/wallet/test \
 	wallet_nginx:latest
 

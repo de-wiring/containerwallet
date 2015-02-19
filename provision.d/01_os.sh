@@ -1,5 +1,5 @@
 
 export DEBIAN_FRONTEND=noninteractive
-apt-get update -y
-apt-get install rng-tools haveged
+apt-get update -yq
+apt-get install -yq rng-tools haveged
 

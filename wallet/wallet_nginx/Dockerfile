@@ -2,7 +2,7 @@ FROM debian:wheezy
 
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update -yqq
-RUN apt-get install -yqq nginx openssl
+RUN apt-get -yqq install nginx openssl
 
 ADD nginx.conf /etc/nginx/nginx.conf
 
@@ -24,12 +24,12 @@ ADD certs/server.key /etc/nginx/certs/server.key
 # RUN ( cd ./certs && openssl dhparam -out dhparam.pem 2048 )
 ADD certs/dhparam.pem /etc/nginx/certs/dhparam.pem
 
-# give it all to wallet owner
+# give it all to wallet owner, since he runs nginx
 RUN chown -R wallet:wallet /etc/nginx && find /etc/nginx -type f -exec chmod 400 {} \; 
 RUN chown -R wallet:wallet /var/lib/nginx /var/log/nginx
 
-# add wallet scripts
-RUN mkdir /wallet/bin /wallet/var /wallet/data /wallet/data-sigs && chown -R wallet /wallet/bin /wallet/var /wallet/data /wallet/data-sigs
+# create dirs, add wallet scripts
+RUN for d in bin var data data-sigs; do mkdir /wallet/${d} && chown -R wallet /wallet/${d}; done
 ADD importkey 		/wallet/bin/importkey
 ADD importownertrust 	/wallet/bin/importownertrust
 ADD checkintegrity 	/wallet/bin/checkintegrity
@@ -39,7 +39,7 @@ RUN ( cd /wallet/bin; chown wallet:wallet * && chmod u=rx,g-rwx,o-rwx *; for i i
 
 USER wallet
 
-# create a key
+# create a key using a perdefined key spec, remove it afterwards
 ADD gpg-containerwallet.keyspec /wallet/home/gpg-containerwallet.keyspec
 RUN gpg --gen-key --batch /wallet/home/gpg-containerwallet.keyspec && \
 	rm /wallet/home/gpg-containerwallet.keyspec && \
