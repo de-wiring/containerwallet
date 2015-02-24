@@ -1,0 +1,107 @@
+# EXAMPLE script, NOT READY FOR PRODUCTION USE
+#
+
+HOME                    = /wallet/ca
+RANDFILE                = $ENV::HOME/.rnd
+
+[ ca ]
+default_ca      = CA_default            
+
+[ CA_default ]
+dir             = /wallet/ca
+certs           = $dir/certs            
+new_certs_dir   = $certs                
+database        = $dir/index.txt        
+certificate     = $dir/cacert.pem       
+private_key     = $dir/private/cakey.pem
+serial          = $dir/serial           
+RANDFILE        = $dir/private/.rand    
+
+crldir          = $dir/crl
+crlnumber       = $dir/crlnumber        
+crl             = $crldir/crl.pem       
+
+x509_extensions = usr_cert              
+copy_extensions	= copy
+
+name_opt        = ca_default            
+cert_opt        = ca_default            
+
+default_days    = 365                   
+default_crl_days= 30                    
+default_md      = sha256
+preserve        = no                    
+
+policy          = policy_match
+
+[ policy_match ]
+countryName             = optional
+stateOrProvinceName     = optional
+organizationName        = match         
+organizationalUnitName  = optional      
+commonName              = supplied      
+emailAddress            = optional      
+
+[ policy_anything ]
+countryName             = optional
+stateOrProvinceName     = optional
+localityName            = optional
+organizationName        = optional
+organizationalUnitName  = optional
+commonName              = supplied
+emailAddress            = optional
+
+[ req ]
+default_bits            = 4096
+default_keyfile         = privkey.pem
+distinguished_name      = req_distinguished_name 
+attributes              = req_attributes         
+x509_extensions		= v3_ca  
+req_extensions		= v3_req 
+
+string_mask = nombstr
+
+[ req_attributes ]
+
+[ req_distinguished_name ]
+countryName                     = Country Name (2 letter code)
+countryName_default             = DE
+countryName_min                 = 2
+countryName_max                 = 2
+
+stateOrProvinceName             = State or Province Name (full name)
+stateOrProvinceName_default     =
+
+localityName                    = Locality Name (eg, city)
+localityName_default            = Berlin
+
+organizationName                = Organization Name (eg, company)
+organizationName_default        = de-wiring.net
+
+organizationalUnitName          = Organizational Unit Name (eg, section)
+organizationalUnitName_default  = containerwallet
+
+commonName                      = Common Name (eg, YOUR name)
+commonName_default		= CA
+commonName_max                  = 64
+
+emailAddress                    = Email Address
+emailAddress_default		= 
+emailAddress_max                = 64
+
+
+[ usr_cert ]
+basicConstraints=CA:false
+
+subjectKeyIdentifier=hash
+authorityKeyIdentifier=keyid,issuer
+
+[ v3_ca ]
+basicConstraints                        = CA:TRUE
+subjectKeyIdentifier                    = hash
+authorityKeyIdentifier                  = keyid:always,issuer:always
+
+[ v3_req ]
+basicConstraints                        = CA:FALSE
+subjectKeyIdentifier                    = hash
+

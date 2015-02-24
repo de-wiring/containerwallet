@@ -1,3 +1,4 @@
+# adapted from docker.com install scripts for ubuntu
 which docker >/dev/null 2>&1
 if [[ $? -ne 0 ]]; then 
 		export DEBIAN_FRONTEND=noninteractive
@@ -24,6 +25,9 @@ gpasswd -a vagrant docker
 docker info
 
 # pull us some images to play with
-docker pull debian:wheezy
+docker pull debian:jessie
 docker pull busybox:latest
 
+# pull additional spec stuff
+docker pull dewiring/spec_serverspec
+docker pull dewiring/spec_cucumber

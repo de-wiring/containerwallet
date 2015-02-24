@@ -2,12 +2,10 @@
 
 # key
 # 
-# stores the public key
-#
+# imports a public key to wallet users keyring. Shows public keys
+# afterwards
 
-PUBLIC_KEY_ID="containerwallet"
-
-gpg --import \
+gpg 	--import \
 	--batch -q --yes \
 	-
 

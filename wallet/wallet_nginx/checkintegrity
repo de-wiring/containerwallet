@@ -1,4 +1,7 @@
 #!/bin/bash
+#
+# Checks integrity of wallet components such as keys, data objects
+# and scripts
 
 # wallet user has at least one gpg public key 
 NUM_PUB_KEYS=$(gpg -k $ID | grep uid | wc -l)
@@ -21,11 +24,6 @@ gpg -k $ID | grep -wq "^pub.*4096"
 F=/wallet/bin/store
 if [[ -x $F ]]; then
 	echo OK	script found: $F
-	if [[ `sha1sum $F` == "3564932bc51f2f423c814211a1169a40a3544020  /wallet/bin/store" ]]; then
-		echo OK	SHA sum ok: $F
-	else
-		echo ERROR	script found, but SHA invalid!
-	fi
 else
 	echo ERROR	script $F not found!
 fi

@@ -1,26 +1,25 @@
 #!/bin/bash
 
 # add keys from mounted volume. check first
-if [[ ! -d /tmp/keys ]]; then
-	echo ERROR Expected gpg keys to be mounted to /tmp/keys, exiting
+if [[ ! -d /wallet/keys ]]; then
+	echo ERROR Expected gpg keys to be mounted to /wallet/keys, exiting
 	exit 1
 fi
-if [[ `find /tmp/keys -type f | wc -l` -eq 0 ]]; then
-	echo ERROR No keys found in mounted /tmp/keys, exiting
+if [[ `find /wallet/keys -type f | wc -l` -eq 0 ]]; then
+	echo ERROR No keys found in mounted /wallet/keys, exiting
 	exit 2
 fi
 
-# curl secrets we need
-
+# curl all  secrets we need. Must be present on $OBJECTS envvar.
 for OBJECT in $OBJECTS; do
 	echo Querying $OBJECT
 	curl -s -k \
-		--key /tmp/tls/client.key \
-		--cert /tmp/tls/client.crt \
+		--key /wallet/tls/Application1.key \
+		--cert /wallet/tls/Application1.pem \
 		"https://$WALLET_PORT_8443_TCP_ADDR:$WALLET_PORT_8443_TCP_PORT/$OBJECT" | \
 	gpg -d -q --no-default-keyring \
-		--secret-keyring /tmp/keys/*.sec \
-		--keyring /tmp/keys/*.pub 2>/dev/null \
+		--secret-keyring /wallet/keys/*.sec \
+		--keyring /wallet/keys/*.pub 2>/dev/null \
 	>/tmp/$OBJECT
 
 	# render config files. demo here: just show..
@@ -29,11 +28,6 @@ for OBJECT in $OBJECTS; do
 	# and remove
 	rm /tmp/$OBJECTS
 done
-
-# remove tls keys, so no process is able to query the wallet again
-rm -fr /tmp/tls
-
-#rm -fr ~/.gnupg
 
 # exec "app", just shell for demoing
 exec /bin/bash
