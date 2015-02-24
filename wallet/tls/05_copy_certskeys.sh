@@ -24,7 +24,7 @@ for k in wallet Application1; do
 	# todo: with nginx >1.7.3 passphrase file can be provided.
 	openssl rsa \
 		-in 	$CA_PATH/private/${k}-key.pem \
-		-out 	$TARGET/${k}/${k}.key \	
+		-out 	$TARGET/${k}/${k}.key \
 		-passin file:./passphrase-file
 done
 
