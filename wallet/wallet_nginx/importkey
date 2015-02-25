@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# key
+# 
+# imports a public key to wallet users keyring. Shows public keys
+# afterwards
+
+gpg 	--import \
+	--batch -q --yes \
+	-
+
+gpg -k

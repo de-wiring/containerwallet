@@ -1,0 +1,12 @@
+%echo Generating key for content-signing in wallet itself
+Key-Type: RSA
+Key-Length: 4096
+Subkey-Type: RSA
+Subkey-Length: 4096
+Name-Real: Containerwallet
+Name-Email: nil
+Expire-Date: 0
+%no-protection
+%no-ask-passphrase
+%commit
+%echo done

@@ -1,0 +1,42 @@
+#!/bin/bash
+
+# store
+# 
+# stores a single, text-based entry into a gpg-encrypted file
+#
+
+if [[ -z "$1" ]]; then
+	echo ERROR Must supply key id as 1st parameter, exiting.
+	exit 1
+fi
+
+if [[ -z "$2" ]]; then
+	echo ERROR Must supply name of encrypted object as 2nd parameter, content via stdin. Exiting.
+	exit 2
+fi
+
+PUBLIC_KEY_ID="$1"
+TARGET_DIR="/wallet/data"
+TARGET_SIGDIR="/wallet/data-sigs"
+TARGET_FILE=`basename $2`
+
+# switch perms, call gpg, read from stdin, encrypt to wallet file, sign with containerwallet key
+( umask o-rwx,g-wx,u+rw; \
+	gpg \
+	--encrypt \
+	--armor \
+	--trust-model always \
+	--recipient $PUBLIC_KEY_ID \
+	-o $TARGET_DIR/$TARGET_FILE \
+	--batch -q --yes \
+	- ; \
+	gpg \
+	--sign --detach-sig -a --no-tty \
+	--output $TARGET_SIGDIR/$TARGET_FILE.sig \
+	$TARGET_DIR/$TARGET_FILE
+) && {
+	echo OK	$TARGET_FILE for target $PUBLIC_KEY_ID
+}
+
+
+

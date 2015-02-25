@@ -1,0 +1,56 @@
+#!/bin/bash
+#
+# Checks integrity of wallet components such as keys, data objects
+# and scripts
+
+# wallet user has at least one gpg public key 
+NUM_PUB_KEYS=$(gpg -k $ID | grep uid | wc -l)
+if [[ "$NUM_PUB_KEYS" == "0" ]]; then
+	echo ERROR	did not find any gpg keys?
+else
+	echo OK		gpg keys found
+fi
+
+# there must be no private key stored
+RES=$(gpg -K | grep "^uid" | grep -v Containerwallet | wc -l)
+if [[ "$RES" != "0" ]]; then
+	echo ERROR 	there are additional secret keys stored, but must not.
+else
+	echo OK		no secret key found
+fi
+gpg -k $ID | grep -wq "^pub.*4096"
+
+# look for scripts, check SHAs
+F=/wallet/bin/store
+if [[ -x $F ]]; then
+	echo OK	script found: $F
+else
+	echo ERROR	script $F not found!
+fi
+
+# any objects in?
+NUM=`find /wallet/data/ -type f | wc -l`
+echo INFO 	There are $NUM objects in wallet
+
+# make sure all objects belong to wallet user, have correct access rights
+NUM_RIGHT_OWNER=$(find /wallet/data -type f -exec stat {} \; | grep -E '^Access: \(0640.*\).*Uid: \(.*wallet\).*Gid: \(.*wallet\)' | wc -l)
+if [[ "$NUM_RIGHT_OWNER" != "$NUM" ]]; then
+	echo ERROR	Not all objects have correct access rights
+else
+	echo OK	All objects have correct access rights
+fi
+
+# check signatures of all encrypted objects, if any
+if [[ $NUM -gt 0 ]]; then
+	( cd /wallet/data; for o in *; do 
+		gpg --verify /wallet/data-sigs/${o}.sig /wallet/data/$o >/dev/null 2>&1
+		if [[ $? -eq 0 ]]; then
+			echo OK	signature ok: $o
+		else
+			echo ERROR signature INVALID: $o ! Please recreate wallet
+			gpg --verify /wallet/data-sigs/${o}.sig /wallet/data/$o
+		fi
+	  done
+	)
+fi
+

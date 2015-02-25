@@ -1,0 +1,13 @@
+%echo Generating key for Application1
+Key-Type: RSA
+Key-Length: 4096
+Subkey-Type: RSA
+Subkey-Length: 4096
+Name-Real: Application1
+Name-Email: nil
+Expire-Date: 0
+%no-ask-passphrase
+%pubring app1.pub
+%secring app1.sec
+%commit
+%echo done

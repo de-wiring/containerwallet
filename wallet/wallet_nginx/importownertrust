@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# key
+# 
+# imports ownertrust into wallet users keyring
+#
+
+gpg 	--import-ownertrust \
+	--batch -q --yes \
+	-
+
+gpg -k
