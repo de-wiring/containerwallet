@@ -6,7 +6,7 @@
 # link to wallet and supply object name(s)
 docker run \
 	-ti \
-	-v /var/wallet-keys/Application1:/wallet/keys \
+	-v /wallet/gpg/Application1:/wallet/keys \
 	-v /wallet/tls/Application1:/wallet/tls \
 	--link wallet:wallet \
 	-e 'OBJECTS=database-password' \
