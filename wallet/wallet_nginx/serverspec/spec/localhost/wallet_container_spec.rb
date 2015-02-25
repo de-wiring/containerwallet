@@ -41,3 +41,22 @@ describe 'Wallet nginx should NOT serve requests without tls client certificate'
 end
 
 
+describe 'Wallet nginx should serve requests with tls client certificate' do
+	describe file '/wallet/tls/Application1/Application1.key' do
+		it { should be_file }
+		it { should be_owned_by 'root' }
+		it { should be_grouped_into 'root' }
+	end
+
+	describe file '/wallet/tls/Application1/Application1.pem' do
+		it { should be_file }
+		it { should be_owned_by 'root' }
+		it { should be_grouped_into 'root' }
+	end
+
+	describe command "curl -k -s --key /wallet/tls/Application1/Application1.key --cert /wallet/tls/Application1/Application1.pem https://#{$wallet_ipport0}/non_existing_object" do
+		its(:stdout) { should match /404 Not Found/ }
+		its(:stdout) { should_not match /No required SSL certificate was sent/ }
+	end
+end
+
